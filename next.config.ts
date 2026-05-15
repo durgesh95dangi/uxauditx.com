@@ -2,10 +2,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: [
-    'playwright-core',
-    '@sparticuz/chromium',
-  ],
+  // Empty config, no external packages needed for Railway/Docker
 }
 
 export default nextConfig

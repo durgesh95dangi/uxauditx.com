@@ -1,25 +1,12 @@
 // src/lib/scraper.ts
-import { chromium as playwright } from 'playwright-core'
+import { chromium as playwright } from 'playwright'
 import * as cheerio from 'cheerio'
 import type { ScrapedPage } from '@/types'
 
 async function getBrowser() {
-  // If we are not on Vercel or AWS Lambda, we assume we are local
-  const isLocal = !process.env.VERCEL && !process.env.AWS_EXECUTION_ENV;
-
-  if (isLocal) {
-    // Local: use the system-installed Playwright browser
-    return playwright.launch({
-      headless: true,
-    })
-  }
-
-  // Production (Vercel/Lambda): use @sparticuz/chromium
-  const chromium = await import('@sparticuz/chromium').then(m => m.default)
   return playwright.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
     headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   })
 }
 

@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { Lock, ArrowRight, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import './report.css';

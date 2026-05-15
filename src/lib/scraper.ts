@@ -1,12 +1,46 @@
 // src/lib/scraper.ts
 import { chromium as playwright } from 'playwright'
 import * as cheerio from 'cheerio'
+import * as fs from 'fs'
 import type { ScrapedPage } from '@/types'
 
 async function getBrowser() {
+  // In Docker (Railway), the Playwright image pre-installs Chromium at /ms-playwright.
+  // We find the executable dynamically to handle different Playwright versions.
+  let executablePath: string | undefined = undefined
+
+  const msPlaywrightPath = '/ms-playwright'
+  if (fs.existsSync(msPlaywrightPath)) {
+    // Find the chromium or chromium-headless-shell binary
+    const dirs = fs.readdirSync(msPlaywrightPath)
+    const chromiumDir = dirs.find(d => d.startsWith('chromium'))
+    if (chromiumDir) {
+      const candidates = [
+        `${msPlaywrightPath}/${chromiumDir}/chrome-linux/chrome`,
+        `${msPlaywrightPath}/${chromiumDir}/chrome-linux/headless_shell`,
+        `${msPlaywrightPath}/${chromiumDir}/headless_shell`,
+      ]
+      executablePath = candidates.find(p => fs.existsSync(p))
+    }
+    // Also check headless-shell directory
+    if (!executablePath) {
+      const shellDir = dirs.find(d => d.startsWith('chromium_headless_shell'))
+      if (shellDir) {
+        const shellPath = `${msPlaywrightPath}/${shellDir}/chrome-linux/headless_shell`
+        if (fs.existsSync(shellPath)) executablePath = shellPath
+      }
+    }
+  }
+
   return playwright.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    executablePath,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
   })
 }
 

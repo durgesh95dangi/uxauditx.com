@@ -3,6 +3,10 @@ FROM mcr.microsoft.com/playwright:v1.50.0-jammy
 
 WORKDIR /app
 
+# Skip Playwright's browser download during npm install
+# The base image already has Chromium installed at /ms-playwright
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
 # Install dependencies
 COPY package.json package-lock.json ./
 RUN npm ci

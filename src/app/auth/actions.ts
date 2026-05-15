@@ -17,7 +17,7 @@ export async function signInAction(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    redirect(`/login?message=${encodeURIComponent(error.message)}&redirect=${encodeURIComponent(redirectTo)}`)
   }
 
   redirect(redirectTo)
@@ -42,11 +42,11 @@ export async function signUpAction(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    redirect(`/signup?message=${encodeURIComponent(error.message)}&redirect=${encodeURIComponent(redirectTo)}`)
   }
 
-  // Next.js redirects
-  redirect(`${redirectTo}${redirectTo.includes('?') ? '&' : '?'}message=Check your email to continue sign in process`)
+  // Redirect with confirmation message
+  redirect(`/signup?message=${encodeURIComponent('Check your email to confirm your account')}&redirect=${encodeURIComponent(redirectTo)}`)
 }
 
 export async function signOutAction() {
@@ -68,10 +68,10 @@ export async function forgotPasswordAction(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    redirect(`/forgot-password?message=${encodeURIComponent(error.message)}`)
   }
 
-  return { success: true }
+  redirect(`/forgot-password?message=${encodeURIComponent('Check your email for a password reset link')}`)
 }
 
 export async function resetPasswordAction(formData: FormData) {
@@ -83,8 +83,8 @@ export async function resetPasswordAction(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    redirect(`/reset-password?message=${encodeURIComponent(error.message)}`)
   }
 
-  redirect('/login?message=Password updated successfully')
+  redirect('/login?message=Password updated successfully. Please log in.')
 }

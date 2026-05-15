@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MonitorCheck, Activity, Zap, BarChart3, Shield, ArrowRight, Sparkles, CheckCircle2, Loader2, Search, Eye } from 'lucide-react';
@@ -38,6 +39,16 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) router.push('/dashboard');
+    };
+    checkAuth();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,12 +107,23 @@ export default function Home() {
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLeadSubmitting(true);
-    // Mock API
-    await new Promise(r => setTimeout(r, 1000));
+
+    // Sign up the user with Supabase
+    const supabase = createClient();
+    const { error } = await supabase.auth.signUp({
+      email: leadEmail,
+      password: Math.random().toString(36).slice(-10) + 'A1!', // temp password
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/results/${auditData?.auditId}`,
+      },
+    });
+
     setLeadSubmitting(false);
     setShowLeadModal(false);
+
+    // Redirect to report regardless — they can complete signup via email later
     if (auditData?.auditId) {
-      router.push(`/results?id=${auditData.auditId}`);
+      router.push(`/results/${auditData.auditId}`);
     }
   };
 
@@ -351,7 +373,7 @@ export default function Home() {
         </nav>
         
         <div className="flex items-center gap-5">
-          <a href="#" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">Log in</a>
+          <a href="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">Log in</a>
           <Button className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all text-sm font-medium shadow-sm hover:shadow-white/5">
             Book a Demo
           </Button>

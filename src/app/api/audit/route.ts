@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { scrapePage } from '@/lib/scraper'
 import { runFullAudit } from '@/lib/claude'
 import { supabase } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/server'
 import { ratelimit } from '@/lib/ratelimit'
 import { extractDomain, getClientIP } from '@/lib/utils'
 import { getProviderInfo } from '@/lib/ai-provider'
@@ -43,6 +44,11 @@ export async function POST(req: NextRequest) {
 
     const { provider, model } = getProviderInfo()
 
+    // Get authenticated user if logged in
+    const ssrSupabase = await createClient()
+    const { data: { user } } = await ssrSupabase.auth.getUser()
+    const userId = user?.id || null
+
     // 1. Save lead immediately — before anything else
     // This captures every user even if the audit fails later
     const { data: audit, error: insertError } = await supabase
@@ -60,6 +66,7 @@ export async function POST(req: NextRequest) {
         utm_campaign: new URL(req.url).searchParams.get('utm_campaign') || '',
         ai_provider: provider,
         ai_model: model,
+        user_id: userId,
         status: 'scraping',
         scrape_started_at: new Date().toISOString(),
       })

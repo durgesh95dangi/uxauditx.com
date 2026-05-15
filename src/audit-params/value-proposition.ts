@@ -6,7 +6,7 @@ export const valueProposition: AuditParam = {
   name: 'Value Proposition',
   category: 'copy',
   weight: 8,
-  isFreePreview: false,
+  isFreePreview: true,
 
   description: 'The unique value proposition tells visitors why they should choose this over every other option. If it is not clear and unique, they leave.',
 

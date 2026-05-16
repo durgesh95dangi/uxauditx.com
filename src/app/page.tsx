@@ -94,7 +94,7 @@ export default function Home() {
 
       setAuditData(data);
       // Immediately redirect to the full report page
-      router.push(`/results?id=${data.auditId}`);
+      router.push(`/results/${data.auditId}`);
     } catch (err: any) {
       clearTimeout(loadingTimeout);
       if (interval) clearInterval(interval);

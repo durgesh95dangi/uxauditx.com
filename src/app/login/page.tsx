@@ -3,6 +3,7 @@ import { signInAction } from '@/app/auth/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MonitorCheck } from 'lucide-react'
+import { getSafePostAuthPath } from '@/lib/auth-redirects'
 
 export default async function Login({
   searchParams,
@@ -10,7 +11,7 @@ export default async function Login({
   searchParams: Promise<{ message?: string; redirect?: string }>
 }) {
   const { message, redirect: redirectTo } = await searchParams
-  const redirect = redirectTo || '/'
+  const redirect = getSafePostAuthPath(redirectTo)
 
   return (
     <div className="min-h-screen bg-[#09090b] text-slate-50 flex items-center justify-center p-4">
@@ -71,8 +72,8 @@ export default async function Login({
         </form>
 
         <p className="text-center text-slate-400 mt-8 text-sm">
-          Don't have an account?{' '}
-          <Link href={`/signup?redirect=${redirect}`} className="text-white font-medium hover:underline">
+          Don&apos;t have an account?{' '}
+          <Link href={`/signup?redirect=${encodeURIComponent(redirect)}`} className="text-white font-medium hover:underline">
             Sign up for free
           </Link>
         </p>

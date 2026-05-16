@@ -3,11 +3,16 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
+import {
+  getPasswordResetRedirectOptions,
+  getSafePostAuthPath,
+  getSignupRedirectOptions,
+} from '@/lib/auth-redirects'
 
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const redirectTo = formData.get('redirect') as string || '/'
+  const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
 
   const supabase = await createClient()
 
@@ -26,19 +31,17 @@ export async function signInAction(formData: FormData) {
 export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const redirectTo = formData.get('redirect') as string || '/'
+  const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
   
   const headersList = await headers()
-  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const origin = headersList.get('origin')
 
   const supabase = await createClient()
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback?redirect_to=${encodeURIComponent(redirectTo)}`,
-    },
+    options: getSignupRedirectOptions(redirectTo, origin),
   })
 
   if (error) {
@@ -59,13 +62,14 @@ export async function forgotPasswordAction(formData: FormData) {
   const email = formData.get('email') as string
   
   const headersList = await headers()
-  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const origin = headersList.get('origin')
   
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
-  })
+  const { error } = await supabase.auth.resetPasswordForEmail(
+    email,
+    getPasswordResetRedirectOptions(origin)
+  )
 
   if (error) {
     redirect(`/forgot-password?message=${encodeURIComponent(error.message)}`)

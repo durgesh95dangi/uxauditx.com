@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MonitorCheck, Activity, Zap, BarChart3, Shield, ArrowRight, Sparkles, CheckCircle2, Loader2, Search, Eye } from 'lucide-react';
+import { getSignupRedirectOptions } from '@/lib/auth-redirects';
 
 const STEPS = [
   'Understanding Business Context',
@@ -110,12 +111,11 @@ export default function Home() {
 
     // Sign up the user with Supabase
     const supabase = createClient();
+    const resultPath = auditData?.auditId ? `/results/${auditData.auditId}` : '/';
     const { error } = await supabase.auth.signUp({
       email: leadEmail,
       password: Math.random().toString(36).slice(-10) + 'A1!', // temp password
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/results/${auditData?.auditId}`,
-      },
+      options: getSignupRedirectOptions(resultPath),
     });
 
     setLeadSubmitting(false);
@@ -391,16 +391,16 @@ export default function Home() {
         <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-[#0018F9]/10 rounded-full blur-[120px]" />
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-24 pb-8 relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pt-28 sm:pt-24 pb-8 relative z-10">
 
         {/* Badge — blue */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0018F9]/30 bg-[#0018F9]/10 text-[#4D5FFF] text-xs font-semibold mb-6 backdrop-blur-sm shadow-[0_0_15px_rgba(0,24,249,0.15)]">
+        <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full border border-[#0018F9]/30 bg-[#0018F9]/10 text-[#4D5FFF] text-[11px] sm:text-xs font-semibold mb-5 sm:mb-6 backdrop-blur-sm shadow-[0_0_15px_rgba(0,24,249,0.15)]">
           <Sparkles className="w-3.5 h-3.5" />
           AI-Powered CRO Audit · Free
         </div>
 
         {/* Headline — blue gradient on "losing money" */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-center max-w-4xl leading-[1.1] mb-4 drop-shadow-sm">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-center max-w-4xl leading-[1.08] sm:leading-[1.1] mb-4 drop-shadow-sm">
           <span className="text-white">Your website is </span>
           <span className="bg-gradient-to-r from-[#0018F9] to-[#4D5FFF] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(0,24,249,0.3)]">
             losing money
@@ -408,14 +408,14 @@ export default function Home() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-slate-400 text-base text-center max-w-2xl leading-relaxed mb-8">
+        <p className="text-slate-400 text-sm sm:text-base text-center max-w-2xl leading-relaxed mb-7 sm:mb-8 px-1">
           Paste your URL and get a brutally honest 12-point CRO audit in under 60 seconds.
         </p>
 
         {/* Form area */}
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-xl lg:max-w-2xl">
             <form onSubmit={handleSubmit} className="space-y-4 relative group">
-              <div className="relative flex bg-[#09090b]/80 backdrop-blur-md rounded-full p-2 border border-white/15 shadow-[0_0_30px_rgba(0,24,249,0.1)] transition-all hover:border-white/25 focus-within:border-[#0018F9]/50 focus-within:shadow-[0_0_40px_rgba(0,24,249,0.2)]">
+              <div className="relative flex flex-col lg:flex-row lg:bg-[#09090b]/80 lg:backdrop-blur-md lg:rounded-[4px] lg:p-2 lg:border lg:border-white/15 lg:shadow-[0_0_30px_rgba(0,24,249,0.1)] transition-all lg:hover:border-white/25 lg:focus-within:border-[#0018F9]/50 lg:focus-within:shadow-[0_0_40px_rgba(0,24,249,0.2)]">
                 <Input
                   id="url"
                   type="url"
@@ -423,16 +423,16 @@ export default function Home() {
                   required
                   value={url}
                   onChange={e => setUrl(e.target.value)}
-                  className="flex-1 h-14 bg-transparent hover:bg-transparent focus:bg-transparent focus-within:bg-transparent active:bg-transparent border-0 text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-6 text-base [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_px_1000px_#09090b_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                  className="w-full flex-none lg:flex-1 !h-[60px] lg:!h-14 !min-h-[60px] lg:!min-h-14 bg-[#09090b]/80 lg:bg-transparent hover:bg-[#09090b]/80 lg:hover:bg-transparent focus:bg-[#09090b]/80 lg:focus:bg-transparent focus-within:bg-[#09090b]/80 lg:focus-within:bg-transparent active:bg-[#09090b]/80 lg:active:bg-transparent border border-white/15 lg:border-0 rounded-[4px] text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-5 lg:px-6 text-base shadow-[0_0_30px_rgba(0,24,249,0.1)] lg:shadow-none backdrop-blur-md lg:backdrop-blur-none [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_px_1000px_#09090b_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                 />
                 {/* CTA Button — blue gradient */}
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-14 px-8 rounded-full bg-gradient-to-r from-[#0018F9] to-[#0018F9]/80 hover:from-[#0018F9]/90 hover:to-[#0018F9]/70 text-white border-0 shadow-lg shadow-[#0018F9]/25 hover:shadow-[#0018F9]/40 transition-all font-bold text-base whitespace-nowrap overflow-hidden group/btn relative disabled:opacity-70"
+                  className="w-full lg:w-auto h-[60px] lg:h-14 mt-[10px] lg:mt-0 px-6 lg:px-8 rounded-[4px] bg-gradient-to-r from-[#0018F9] to-[#0018F9]/80 hover:from-[#0018F9]/90 hover:to-[#0018F9]/70 text-white border-0 shadow-lg shadow-[#0018F9]/25 hover:shadow-[#0018F9]/40 transition-all font-bold text-base whitespace-nowrap overflow-hidden group/btn relative disabled:opacity-70"
                 >
-                  <div className="absolute inset-0 bg-white/15 translate-y-full group-hover/btn:translate-y-0 transition-transform rounded-full" />
-                  <span className="relative z-10 flex items-center">
+                  <div className="absolute inset-0 bg-white/15 translate-y-full group-hover/btn:translate-y-0 transition-transform rounded-[4px]" />
+                  <span className="relative z-10 flex items-center justify-center">
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -453,7 +453,7 @@ export default function Home() {
                 </div>
               )}
               
-              <p className="text-slate-500 text-sm text-center pt-5 font-medium flex items-center justify-center gap-2">
+              <p className="text-slate-500 text-xs sm:text-sm text-center pt-4 sm:pt-5 font-medium flex items-center justify-center gap-2">
                 <Shield className="w-4 h-4 text-slate-600" />
                 Free · No account needed · Results in ~60s
               </p>
@@ -461,15 +461,15 @@ export default function Home() {
         </div>
 
         {/* Features row — blue icons */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 max-w-3xl w-full">
+        <div className="mt-7 sm:mt-8 flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-8 gap-y-3 sm:gap-y-4 max-w-3xl w-full">
           {[
             { icon: Zap, title: 'Vision AI Analysis' },
             { icon: BarChart3, title: '12 CRO Parameters' },
             { icon: Shield, title: 'Actionable Fixes' },
           ].map(({ icon: Icon, title }, i) => (
-            <div key={i} className="flex items-center gap-2 text-slate-300 bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-sm backdrop-blur-sm">
+            <div key={i} className="flex items-center gap-2 text-slate-300 bg-white/5 px-3 sm:px-4 py-2 rounded-full border border-white/10 shadow-sm backdrop-blur-sm">
               <Icon className="w-4 h-4 text-[#4D5FFF]" />
-              <span className="text-sm font-medium">{title}</span>
+              <span className="text-xs sm:text-sm font-medium">{title}</span>
             </div>
           ))}
         </div>

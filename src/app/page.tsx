@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
+import { signOutAction } from '@/app/auth/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MonitorCheck, Activity, Zap, BarChart3, Shield, ArrowRight, Sparkles, CheckCircle2, Loader2, Search, Eye } from 'lucide-react';
@@ -17,7 +19,6 @@ const STEPS = [
 ];
 
 export default function Home() {
-  const router = useRouter();
   const [url, setUrl] = useState('');
   const [viewState, setViewState] = useState<'form' | 'loading' | 'results'>('form');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,6 +26,7 @@ export default function Home() {
   const [auditData, setAuditData] = useState<any>(null);
   const [error, setError] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   // Lead capture state
   const [showLeadModal, setShowLeadModal] = useState(false);
@@ -40,15 +42,19 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Redirect logged-in users to dashboard
   useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) router.push('/dashboard');
-    };
-    checkAuth();
-  }, [router]);
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +100,7 @@ export default function Home() {
 
       setAuditData(data);
       // Immediately redirect to the full report page
-      router.push(`/results/${data.auditId}`);
+      window.location.assign(`/results/${data.auditId}`);
     } catch (err: any) {
       clearTimeout(loadingTimeout);
       if (interval) clearInterval(interval);
@@ -123,7 +129,7 @@ export default function Home() {
 
     // Redirect to report regardless — they can complete signup via email later
     if (auditData?.auditId) {
-      router.push(`/results/${auditData.auditId}`);
+      window.location.assign(`/results/${auditData.auditId}`);
     }
   };
 
@@ -373,7 +379,22 @@ export default function Home() {
         </nav>
         
         <div className="flex items-center gap-5">
-          <a href="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">Log in</a>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">
+                Dashboard
+              </Link>
+              <form action={signOutAction}>
+                <button type="submit" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                  Log out
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link href="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block">
+              Log in
+            </Link>
+          )}
           <Button className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all text-sm font-medium shadow-sm hover:shadow-white/5">
             Book a Demo
           </Button>

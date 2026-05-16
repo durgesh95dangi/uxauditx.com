@@ -1,8 +1,9 @@
 import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
+import { signOutAction } from '@/app/auth/actions';
 
 export const dynamic = 'force-dynamic';
-import { Lock, ArrowRight, LogIn } from 'lucide-react';
+import { Lock, ArrowRight, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import './report.css';
 
@@ -84,6 +85,16 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="report-wrapper" style={{ backgroundColor: '#F8F6F1', minHeight: '100vh', display: 'block' }}>
+      {isLoggedIn && (
+        <div className="mx-auto flex max-w-[1040px] justify-end px-4 pt-4">
+          <form action={signOutAction}>
+            <button className="flex items-center gap-2 rounded-md border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--ink)] transition-colors hover:bg-[var(--paper-3)]">
+              <LogOut className="h-4 w-4" />
+              Log out
+            </button>
+          </form>
+        </div>
+      )}
       {/* ── COVER PAGE ── */}
       <div className="cover">
         <div className="cover-bar">
@@ -325,7 +336,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                   View All My Reports
                 </button>
               </Link>
-              <Link href="/">
+              <Link href="/dashboard">
                 <button className="px-6 py-3 border border-[var(--border)] text-[var(--ink)] rounded-md font-medium hover:bg-[var(--paper-3)] transition-colors">
                   Run Another Audit
                 </button>

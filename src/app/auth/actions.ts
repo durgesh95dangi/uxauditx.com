@@ -4,9 +4,11 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import {
+  getSignupRedirectOptions,
   getPasswordResetRedirectOptions,
   getSafePostAuthPath,
 } from '@/lib/auth-redirects'
+import { claimRedirectedAuditForUser } from '@/lib/audit-ownership'
 
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string
@@ -24,6 +26,11 @@ export async function signInAction(formData: FormData) {
     redirect(`/login?message=${encodeURIComponent(error.message)}&redirect=${encodeURIComponent(redirectTo)}`)
   }
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    await claimRedirectedAuditForUser(redirectTo, user)
+  }
+
   redirect(redirectTo)
 }
 
@@ -31,19 +38,23 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
+  const headersList = await headers()
+  const origin = headersList.get('origin')
 
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      emailRedirectTo: 'https://uxauditx.com/auth/callback',
-    },
+    options: getSignupRedirectOptions(redirectTo, origin),
   })
 
   if (error) {
     redirect(`/signup?message=${encodeURIComponent(error.message)}&redirect=${encodeURIComponent(redirectTo)}`)
+  }
+
+  if (data.user) {
+    await claimRedirectedAuditForUser(redirectTo, data.user)
   }
 
   // Redirect with confirmation message

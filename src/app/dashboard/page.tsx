@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { signOutAction } from '@/app/auth/actions';
 import { MonitorCheck, ExternalLink, Download, Clock, BarChart3, LogOut } from 'lucide-react';
+import { DashboardNewAudit } from '@/components/DashboardNewAudit';
 
 export default async function Dashboard() {
   // Require authentication
@@ -47,7 +48,7 @@ export default async function Dashboard() {
     <div className="min-h-screen bg-[#09090b] text-slate-50 font-sans">
       {/* Header */}
       <header className="border-b border-white/10 px-6 py-4 md:px-12 flex items-center justify-between bg-[#0f172a]/50 backdrop-blur-md sticky top-0 z-10">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0018F9] to-[#0018F9]/70 flex items-center justify-center shadow-sm border border-white/10">
             <MonitorCheck className="w-4 h-4 text-white" />
           </div>
@@ -69,9 +70,12 @@ export default async function Dashboard() {
 
       <main className="max-w-6xl mx-auto px-4 py-10 md:px-8">
         {/* Page Title */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">My Audit Reports</h1>
-          <p className="text-slate-400">All your CRO audit reports in one place. Each report includes the full 12-parameter analysis.</p>
+        <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">My Audit Reports</h1>
+            <p className="text-slate-400">All your CRO audit reports in one place. Each report includes the full 12-parameter analysis.</p>
+          </div>
+          {audits && audits.length > 0 && <DashboardNewAudit userEmail={user.email || ''} />}
         </div>
 
         {/* Stats Row */}
@@ -102,11 +106,9 @@ export default async function Dashboard() {
             <BarChart3 className="w-12 h-12 text-slate-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">No audits yet</h3>
             <p className="text-slate-400 mb-8">Run your first CRO audit to see results here.</p>
-            <Link href="/">
-              <button className="px-6 py-3 bg-[#0018F9] text-white rounded-md font-medium hover:bg-[#0018F9]/90 transition-colors">
-                Run Your First Audit
-              </button>
-            </Link>
+            <div className="mx-auto max-w-xl text-left">
+              <DashboardNewAudit userEmail={user.email || ''} defaultOpen />
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
@@ -159,14 +161,6 @@ export default async function Dashboard() {
           </div>
         )}
 
-        {/* Run New Audit */}
-        <div className="mt-8 text-center">
-          <Link href="/">
-            <button className="px-6 py-3 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 rounded-lg font-medium transition-all">
-              + Run Another Audit
-            </button>
-          </Link>
-        </div>
       </main>
     </div>
   );

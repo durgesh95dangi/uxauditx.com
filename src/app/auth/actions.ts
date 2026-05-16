@@ -6,7 +6,6 @@ import { headers } from 'next/headers'
 import {
   getPasswordResetRedirectOptions,
   getSafePostAuthPath,
-  getSignupRedirectOptions,
 } from '@/lib/auth-redirects'
 
 export async function signInAction(formData: FormData) {
@@ -32,16 +31,15 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
-  
-  const headersList = await headers()
-  const origin = headersList.get('origin')
 
   const supabase = await createClient()
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: getSignupRedirectOptions(redirectTo, origin),
+    options: {
+      emailRedirectTo: 'https://uxauditx.com/auth/callback',
+    },
   })
 
   if (error) {

@@ -6,7 +6,6 @@ import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MonitorCheck, Activity, Zap, BarChart3, Shield, ArrowRight, Sparkles, CheckCircle2, Loader2, Search, Eye } from 'lucide-react';
-import { getSignupRedirectOptions } from '@/lib/auth-redirects';
 
 const STEPS = [
   'Understanding Business Context',
@@ -111,11 +110,12 @@ export default function Home() {
 
     // Sign up the user with Supabase
     const supabase = createClient();
-    const resultPath = auditData?.auditId ? `/results/${auditData.auditId}` : '/';
     const { error } = await supabase.auth.signUp({
       email: leadEmail,
       password: Math.random().toString(36).slice(-10) + 'A1!', // temp password
-      options: getSignupRedirectOptions(resultPath),
+      options: {
+        emailRedirectTo: 'https://uxauditx.com/auth/callback',
+      },
     });
 
     setLeadSubmitting(false);

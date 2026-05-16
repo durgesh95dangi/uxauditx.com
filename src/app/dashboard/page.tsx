@@ -1,15 +1,13 @@
-import { createClient } from '@/utils/supabase/server';
 import { supabase as adminSupabase } from '@/lib/supabase';
-import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 import Link from 'next/link';
-import { signOutAction } from '@/app/auth/actions';
-import { MonitorCheck, ExternalLink, Download, Clock, BarChart3, LogOut } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server';
+import { ExternalLink, Clock, BarChart3 } from 'lucide-react';
 import { DashboardNewAudit } from '@/components/DashboardNewAudit';
+import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
-  // Require authentication
   const ssrSupabase = await createClient();
   const { data: { user } } = await ssrSupabase.auth.getUser();
 
@@ -45,30 +43,7 @@ export default async function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-50 font-sans">
-      {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4 md:px-12 flex items-center justify-between bg-[#0f172a]/50 backdrop-blur-md sticky top-0 z-10">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0018F9] to-[#0018F9]/70 flex items-center justify-center shadow-sm border border-white/10">
-            <MonitorCheck className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-lg font-bold tracking-tight text-white">
-            UXAudit<span className="text-[#4D5FFF]">X</span>
-          </span>
-        </Link>
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-400 hidden sm:block">{user.email}</span>
-          <form action={signOutAction}>
-            <button type="submit" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-white/5">
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
-          </form>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-10 md:px-8">
+    <main className="max-w-6xl mx-auto px-4 py-10 md:px-8">
         {/* Page Title */}
         <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
@@ -148,7 +123,7 @@ export default async function Dashboard() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <Link href={`/results/${audit.id}`}>
+                      <Link href={`/dashboard/reports/${audit.id}`}>
                         <button className="px-4 py-2 text-sm font-medium text-white bg-[#0018F9] hover:bg-[#0018F9]/90 rounded-lg transition-colors">
                           View Report
                         </button>
@@ -160,8 +135,6 @@ export default async function Dashboard() {
             })}
           </div>
         )}
-
-      </main>
-    </div>
+    </main>
   );
 }

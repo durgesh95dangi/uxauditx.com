@@ -57,8 +57,37 @@ export async function signUpAction(formData: FormData) {
     await claimRedirectedAuditForUser(redirectTo, data.user)
   }
 
-  // Redirect with confirmation message
-  redirect(`/signup?message=${encodeURIComponent('Check your email to confirm your account')}&redirect=${encodeURIComponent(redirectTo)}`)
+  if (data.session) {
+    redirect(redirectTo)
+  }
+
+  redirect(
+    `/signup?confirmation=sent&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectTo)}`
+  )
+}
+
+export async function resendSignupConfirmationAction(formData: FormData) {
+  const email = formData.get('email') as string
+  const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
+  const headersList = await headers()
+  const origin = headersList.get('origin')
+  const supabase = await createClient()
+
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: getSignupRedirectOptions(redirectTo, origin),
+  })
+
+  if (error) {
+    redirect(
+      `/signup?confirmation=sent&email=${encodeURIComponent(email)}&resendMessage=${encodeURIComponent(error.message)}&redirect=${encodeURIComponent(redirectTo)}`
+    )
+  }
+
+  redirect(
+    `/signup?confirmation=sent&email=${encodeURIComponent(email)}&resendMessage=${encodeURIComponent('Verification email resent')}&redirect=${encodeURIComponent(redirectTo)}`
+  )
 }
 
 export async function signOutAction() {

@@ -6,8 +6,8 @@ import { Lock, ArrowRight, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import './report.css';
 
-export default async function ResultsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function ResultsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   // Check if user is authenticated
   const ssrSupabase = await createClient();

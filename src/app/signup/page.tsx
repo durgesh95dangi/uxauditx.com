@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MonitorCheck } from 'lucide-react'
 
-export default function Signup({
+export default async function Signup({
   searchParams,
 }: {
-  searchParams: { message: string, redirect?: string }
+  searchParams: Promise<{ message?: string; redirect?: string }>
 }) {
-  const redirect = searchParams.redirect || '/'
+  const { message, redirect: redirectTo } = await searchParams
+  const redirect = redirectTo || '/'
   
   return (
     <div className="min-h-screen bg-[#09090b] text-slate-50 flex items-center justify-center p-4">
@@ -51,9 +52,9 @@ export default function Signup({
             />
           </div>
 
-          {searchParams?.message && (
+          {message && (
             <p className="text-sm text-center font-medium bg-white/5 p-3 rounded-md border border-white/10 text-emerald-400 mt-4">
-              {searchParams.message}
+              {message}
             </p>
           )}
 

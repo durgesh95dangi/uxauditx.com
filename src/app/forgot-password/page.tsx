@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MonitorCheck, ArrowLeft } from 'lucide-react'
 
-export default function ForgotPassword({
+export default async function ForgotPassword({
   searchParams,
 }: {
-  searchParams: { message: string }
+  searchParams: Promise<{ message?: string }>
 }) {
+  const { message } = await searchParams
   return (
     <div className="min-h-screen bg-[#09090b] text-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-[#0f172a] border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
@@ -36,9 +37,9 @@ export default function ForgotPassword({
             />
           </div>
 
-          {searchParams?.message && (
+          {message && (
             <p className="text-sm text-center font-medium bg-white/5 p-3 rounded-md border border-white/10 text-emerald-400 mt-4">
-              {searchParams.message}
+              {message}
             </p>
           )}
 

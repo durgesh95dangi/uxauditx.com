@@ -49,29 +49,40 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await ssrSupabase.auth.getUser()
     const userId = user?.id || null
 
-    // 1. Save lead immediately — before anything else
-    // This captures every user even if the audit fails later
-    const { data: audit, error: insertError } = await supabase
-      .from('audits')
-      .insert({
-        url,
-        name,
-        email,
-        url_domain: extractDomain(url),
-        ip_address: ip,
-        user_agent: req.headers.get('user-agent') || '',
-        referrer: req.headers.get('referer') || '',
-        utm_source: new URL(req.url).searchParams.get('utm_source') || '',
-        utm_medium: new URL(req.url).searchParams.get('utm_medium') || '',
-        utm_campaign: new URL(req.url).searchParams.get('utm_campaign') || '',
-        ai_provider: provider,
-        ai_model: model,
-        user_id: userId,
-        status: 'scraping',
-        scrape_started_at: new Date().toISOString(),
-      })
-      .select()
-      .single()
+    const insertPayload: any = {
+      url,
+      name,
+      email,
+      url_domain: extractDomain(url),
+      ip_address: ip,
+      user_agent: req.headers.get('user-agent') || '',
+      referrer: req.headers.get('referer') || '',
+      utm_source: new URL(req.url).searchParams.get('utm_source') || '',
+      utm_medium: new URL(req.url).searchParams.get('utm_medium') || '',
+      utm_campaign: new URL(req.url).searchParams.get('utm_campaign') || '',
+      ai_provider: provider,
+      ai_model: model,
+      status: 'scraping',
+      scrape_started_at: new Date().toISOString(),
+    }
+
+    // Add user_id only if migration has been run (column exists)
+    if (userId) insertPayload.user_id = userId
+
+    let audit: any
+    let insertError: any
+
+    // Try with user_id first; if column doesn't exist, retry without it
+    const firstTry = await supabase.from('audits').insert(insertPayload).select().single()
+    if (firstTry.error && firstTry.error.message?.includes('user_id')) {
+      delete insertPayload.user_id
+      const secondTry = await supabase.from('audits').insert(insertPayload).select().single()
+      audit = secondTry.data
+      insertError = secondTry.error
+    } else {
+      audit = firstTry.data
+      insertError = firstTry.error
+    }
 
     if (insertError) throw insertError
 

@@ -56,10 +56,10 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
   })
 
-  // Modern sites often keep analytics/chat requests open forever, so `networkidle`
-  // is too strict for a best-effort audit scrape.
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 25000 })
-  await page.waitForLoadState('load', { timeout: 5000 }).catch(() => {})
+  // Scraping needs the document to exist, not every third-party request to settle.
+  // `commit` avoids false failures on pages that keep analytics/chat requests open.
+  await page.goto(url, { waitUntil: 'commit', timeout: 15000 })
+  await page.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {})
 
   // Desktop screenshot — above the fold only (what user sees first)
   await page.setViewportSize({ width: 1280, height: 900 })

@@ -17,7 +17,7 @@ export interface AuditParam {
   name: string
   category: ParamCategory
   weight: number           // 1–10
-  isFreePreview: boolean   // exactly 3 params set true
+  isFreePreview: boolean   // exactly 4 params set true
   description: string
   prompt: string           // full prompt sent to AI for this param
   scoringRubric: { 0: string; 4: string; 7: string; 10: string }

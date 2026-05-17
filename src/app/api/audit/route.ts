@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       auditId: audit.id,
       overallScore: result.overallScore,
       summary: result.summary,
-      freeIssues: result.freeIssues,         // only 3
+      freeIssues: result.freeIssues,         // only 4
       totalIssues: result.totalIssues,        // 12 total
     })
 

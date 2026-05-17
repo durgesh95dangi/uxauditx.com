@@ -46,6 +46,7 @@ async function getBrowser() {
 
 export async function scrapePage(url: string): Promise<ScrapedPage> {
   const browser = await getBrowser()
+  try {
   const context = await browser.newContext({
     ignoreHTTPSErrors: true,
   })
@@ -80,7 +81,6 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
   })
 
   const html = await page.content()
-  await browser.close()
 
   // Parse with Cheerio
   const $ = cheerio.load(html)
@@ -132,6 +132,9 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
     wordCount: bodyText.split(' ').filter(Boolean).length,
     desktopScreenshot: desktopBuffer.toString('base64'),
     mobileScreenshot: mobileBuffer.toString('base64'),
+  }
+  } finally {
+    await browser.close()
   }
 }
 

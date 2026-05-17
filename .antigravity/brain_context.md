@@ -6,7 +6,7 @@
 
 ## 2. System Architecture & Tech Stack
 - **High-level Architectural Pattern:** Monolithic full-stack web application with serverless API routes, functioning as an orchestration layer for headless browser scraping and parallelized AI evaluation.
-- **Hosting:** Railway.app (Docker container using `mcr.microsoft.com/playwright:v1.50.0-jammy`). **NOT Vercel** — moved away due to Serverless size/timeout limits.
+- **Hosting:** Railway.app (Docker container using `mcr.microsoft.com/playwright:v1.60.0-jammy`). **NOT Vercel** — moved away due to Serverless size/timeout limits.
 - **Tech Stack:**
   - **Framework:** Next.js 16.2.6 (App Router), React 19
   - **Styling:** Tailwind CSS 4, shadcn/ui, lucide-react (icons)

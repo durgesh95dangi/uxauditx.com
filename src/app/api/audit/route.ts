@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
     try {
       page = await scrapePage(url)
     } catch (scrapeErr: any) {
+      console.error('[Audit scrape failed]', { url, error: scrapeErr })
       await supabase.from('audits').update({
         status: 'failed',
         scrape_error: scrapeErr.message || 'Failed to load website',

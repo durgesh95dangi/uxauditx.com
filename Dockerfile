@@ -1,5 +1,5 @@
 # Use the official Playwright image which includes Chromium and all its Linux dependencies
-FROM mcr.microsoft.com/playwright:v1.50.0-jammy
+FROM mcr.microsoft.com/playwright:v1.60.0-jammy
 
 WORKDIR /app
 

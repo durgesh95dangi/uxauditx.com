@@ -46,7 +46,9 @@ async function getBrowser() {
 
 export async function scrapePage(url: string): Promise<ScrapedPage> {
   const browser = await getBrowser()
-  const context = await browser.newContext()
+  const context = await browser.newContext({
+    ignoreHTTPSErrors: true,
+  })
   const page = await context.newPage()
 
   // Set a real user agent so sites don't block the bot
@@ -54,7 +56,10 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
   })
 
-  await page.goto(url, { waitUntil: 'networkidle', timeout: 25000 })
+  // Modern sites often keep analytics/chat requests open forever, so `networkidle`
+  // is too strict for a best-effort audit scrape.
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 25000 })
+  await page.waitForLoadState('load', { timeout: 5000 }).catch(() => {})
 
   // Desktop screenshot — above the fold only (what user sees first)
   await page.setViewportSize({ width: 1280, height: 900 })

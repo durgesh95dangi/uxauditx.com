@@ -309,3 +309,11 @@
 
 /* ── UTILITY ── */
 .report-wrapper .divider { height: 1px; background: var(--border); margin: 48px 0; }
+
+@media print {
+  body { background: #fff !important; }
+  header[class*="sticky"],
+  aside,
+  .dashboard-print-hide { display: none !important; }
+  .report-wrapper { background: #fff !important; }
+}

@@ -53,7 +53,7 @@ export function DashboardNewAudit({
         throw new Error(data.error || 'Something went wrong')
       }
 
-      router.push(`/results/${data.auditId}`)
+      router.push(`/dashboard/reports/${data.auditId}`)
       router.refresh()
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'Something went wrong')

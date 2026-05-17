@@ -287,7 +287,7 @@ export function AuditReport({
           <div className="mt-16 text-center py-8 border-t border-[var(--border)]">
             <p className="text-[var(--muted)] mb-4">You have access to the complete report.</p>
             <div className="flex gap-4 justify-center">
-              <Link href="/dashboard">
+              <Link href="/dashboard/reports">
                 <button className="px-6 py-3 bg-[#0018F9] text-white rounded-md font-medium hover:bg-[#0018F9]/90 transition-colors">
                   View All My Reports
                 </button>

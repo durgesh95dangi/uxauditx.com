@@ -7,7 +7,24 @@ import {
   getPasswordResetRedirectOptions,
   getSafePostAuthPath,
 } from '@/lib/auth-redirects'
-import { claimRedirectedAuditForUser } from '@/lib/audit-ownership'
+import { claimPendingAuditsForUser } from '@/lib/audit-ownership'
+import { isValidAuditId, PENDING_AUDIT_COOKIE } from '@/lib/pending-audit'
+import { cookies } from 'next/headers'
+
+async function claimAuditsAfterAuth(
+  user: { id: string; email?: string | null },
+  redirectTo: string,
+  formAuditId?: string | null
+) {
+  const cookieStore = await cookies()
+  const pendingAuditId = cookieStore.get(PENDING_AUDIT_COOKIE)?.value
+
+  await claimPendingAuditsForUser(user, {
+    redirectPath: redirectTo,
+    formAuditId,
+    pendingAuditId: isValidAuditId(pendingAuditId) ? pendingAuditId : null,
+  })
+}
 
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string
@@ -27,7 +44,7 @@ export async function signInAction(formData: FormData) {
 
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
-    await claimRedirectedAuditForUser(redirectTo, user)
+    await claimAuditsAfterAuth(user, redirectTo)
   }
 
   redirect(redirectTo)
@@ -37,6 +54,7 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const redirectTo = getSafePostAuthPath(formData.get('redirect') as string | null)
+  const formAuditId = formData.get('audit_id') as string | null
 
   const supabase = await createClient()
 
@@ -52,7 +70,7 @@ export async function signUpAction(formData: FormData) {
   }
 
   if (data.user) {
-    await claimRedirectedAuditForUser(redirectTo, data.user)
+    await claimAuditsAfterAuth(data.user, redirectTo, formAuditId)
   }
 
   if (data.session) {

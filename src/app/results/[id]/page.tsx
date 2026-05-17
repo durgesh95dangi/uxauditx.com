@@ -1,4 +1,5 @@
 import { AuditReport } from '@/components/AuditReport';
+import { PendingAuditLinker } from '@/components/PendingAuditLinker';
 import { supabase } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
@@ -47,5 +48,10 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  return <AuditReport audit={audit} isLoggedIn={!!user} />;
+  return (
+    <>
+      <PendingAuditLinker auditId={id} />
+      <AuditReport audit={audit} isLoggedIn={!!user} />
+    </>
+  );
 }

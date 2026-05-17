@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import { ExternalLink, Clock, BarChart3 } from 'lucide-react';
 import { DashboardNewAudit } from '@/components/DashboardNewAudit';
+import { claimPendingAuditsForUser } from '@/lib/audit-ownership';
+import { isValidAuditId, PENDING_AUDIT_COOKIE } from '@/lib/pending-audit';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
@@ -14,6 +17,12 @@ export default async function Dashboard() {
   if (!user) {
     redirect('/login?redirect=/dashboard');
   }
+
+  const cookieStore = await cookies();
+  const pendingAuditId = cookieStore.get(PENDING_AUDIT_COOKIE)?.value;
+  await claimPendingAuditsForUser(user, {
+    pendingAuditId: isValidAuditId(pendingAuditId) ? pendingAuditId : null,
+  });
 
   // Fetch all audits for this user (by user_id or email)
   const { data: audits } = await adminSupabase

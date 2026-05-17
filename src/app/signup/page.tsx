@@ -3,6 +3,7 @@ import { resendSignupConfirmationAction, signUpAction } from '@/app/auth/actions
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MailCheck, MonitorCheck, X } from 'lucide-react'
+import { getAuditIdFromRedirectPath } from '@/lib/audit-ownership'
 import { getSafePostAuthPath } from '@/lib/auth-redirects'
 
 export default async function Signup({
@@ -18,6 +19,7 @@ export default async function Signup({
 }) {
   const { confirmation, email, message, redirect: redirectTo, resendMessage } = await searchParams
   const redirect = getSafePostAuthPath(redirectTo)
+  const auditId = getAuditIdFromRedirectPath(redirect)
   const showConfirmationPopup = confirmation === 'sent' && !!email
   
   return (
@@ -36,6 +38,7 @@ export default async function Signup({
 
         <form action={signUpAction} className="space-y-4">
           <input type="hidden" name="redirect" value={redirect} />
+          {auditId && <input type="hidden" name="audit_id" value={auditId} />}
           
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
@@ -120,6 +123,7 @@ export default async function Signup({
               <form action={resendSignupConfirmationAction} className="flex-1">
                 <input type="hidden" name="email" value={email} />
                 <input type="hidden" name="redirect" value={redirect} />
+                {auditId && <input type="hidden" name="audit_id" value={auditId} />}
                 <Button
                   type="submit"
                   className="h-11 w-full bg-[#0018F9] font-semibold text-white hover:bg-[#0018F9]/90"

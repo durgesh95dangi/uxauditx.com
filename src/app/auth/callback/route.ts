@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { getAppOrigin, getSafePostAuthPath } from '@/lib/auth-redirects'
-import { claimRedirectedAuditForUser } from '@/lib/audit-ownership'
+import { claimPendingAuditsForUser } from '@/lib/audit-ownership'
+import { isValidAuditId, PENDING_AUDIT_COOKIE } from '@/lib/pending-audit'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -44,10 +46,19 @@ export async function GET(request: Request) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      await claimRedirectedAuditForUser(redirectTo, user)
+      const cookieStore = await cookies()
+      const pendingAuditId = cookieStore.get(PENDING_AUDIT_COOKIE)?.value
+
+      await claimPendingAuditsForUser(user, {
+        redirectPath: redirectTo,
+        claimAuditId: requestUrl.searchParams.get('claim_audit'),
+        pendingAuditId: isValidAuditId(pendingAuditId) ? pendingAuditId : null,
+      })
     }
 
-    return NextResponse.redirect(new URL(redirectTo, appOrigin))
+    const response = NextResponse.redirect(new URL(redirectTo, appOrigin))
+    response.cookies.set(PENDING_AUDIT_COOKIE, '', { path: '/', maxAge: 0 })
+    return response
   }
 
   return NextResponse.redirect(

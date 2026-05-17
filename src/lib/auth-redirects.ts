@@ -21,11 +21,13 @@ function isLocalOrigin(origin: string) {
 export function getAppOrigin(currentOrigin?: string | null) {
   const requestOrigin = normalizeOrigin(currentOrigin)
 
-  if (requestOrigin && isLocalOrigin(requestOrigin)) {
+  // Only allow dynamic local requests in development mode to avoid container proxy host issues in production
+  if (requestOrigin && isLocalOrigin(requestOrigin) && process.env.NODE_ENV !== 'production') {
     return requestOrigin
   }
 
-  const configuredOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_APP_URL)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL
+  const configuredOrigin = normalizeOrigin(siteUrl)
   if (configuredOrigin) {
     return configuredOrigin
   }

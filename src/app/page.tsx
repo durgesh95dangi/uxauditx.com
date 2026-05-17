@@ -116,11 +116,14 @@ export default function Home() {
 
     // Sign up the user with Supabase
     const supabase = createClient();
+    const redirectToPath = auditData?.auditId ? `/results/${auditData.auditId}` : '/';
+    const callbackUrl = `${window.location.origin}/auth/callback?redirect_to=${encodeURIComponent(redirectToPath)}`;
+
     const { error } = await supabase.auth.signUp({
       email: leadEmail,
       password: Math.random().toString(36).slice(-10) + 'A1!', // temp password
       options: {
-        emailRedirectTo: 'https://uxauditx.com/auth/callback',
+        emailRedirectTo: callbackUrl,
       },
     });
 

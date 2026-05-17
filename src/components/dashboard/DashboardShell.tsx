@@ -9,7 +9,7 @@ import {
   brandName,
 } from '@/design-system'
 import { cn } from '@/lib/utils'
-import { FileText, LayoutDashboard, LogOut, Menu, MonitorCheck } from 'lucide-react'
+import { FileText, LayoutDashboard, LogOut, Menu, MonitorCheck, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -76,6 +76,7 @@ export function DashboardShell({
   const isCollapsed = mounted && collapsed
   const showLabels = !isCollapsed
   const overlayExpanded = isCompact && !isCollapsed
+  const menuOpen = !isCollapsed
 
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_EXPANDED_W
   const mainPaddingLeft = isCollapsed
@@ -83,6 +84,19 @@ export function DashboardShell({
     : overlayExpanded
       ? SIDEBAR_COLLAPSED_W
       : SIDEBAR_EXPANDED_W
+
+  const menuButton = (
+    <button
+      type="button"
+      onClick={toggleCollapsed}
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-app-muted transition-colors hover:bg-white/5 hover:text-app-foreground"
+      aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+      aria-expanded={menuOpen}
+      title={menuOpen ? 'Close menu' : 'Open menu'}
+    >
+      {menuOpen && isCompact ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </button>
+  )
 
   return (
     <div className={cn('min-h-screen', appBg)}>
@@ -112,30 +126,25 @@ export function DashboardShell({
               showLabels ? 'flex items-center gap-2 p-3' : 'flex flex-col items-center gap-2 p-2'
             )}
           >
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              className="flex h-9 w-9 shrink-0 items-center justify-center text-app-muted transition-colors hover:text-app-foreground"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              aria-expanded={!isCollapsed}
-              title={isCollapsed ? 'Expand menu' : 'Collapse menu'}
-            >
-              <Menu className="h-4 w-4" />
-            </button>
-
             {showLabels ? (
-              <Link href="/dashboard" className="flex min-w-0 flex-1 items-center gap-2.5">
-                <span className={brandMark}>
-                  <MonitorCheck className="h-4 w-4" />
-                </span>
-                <span className={cn('truncate text-base', brandName)}>
-                  UXAudit<span className={brandAccent}>X</span>
-                </span>
-              </Link>
+              <>
+                <Link href="/dashboard" className="flex min-w-0 flex-1 items-center gap-2.5">
+                  <span className={brandMark}>
+                    <MonitorCheck className="h-4 w-4" />
+                  </span>
+                  <span className={cn('truncate text-base', brandName)}>
+                    UXAudit<span className={brandAccent}>X</span>
+                  </span>
+                </Link>
+                {menuButton}
+              </>
             ) : (
-              <Link href="/dashboard" className={brandMark} title="UXAuditX Home">
-                <MonitorCheck className="h-4 w-4" />
-              </Link>
+              <>
+                <Link href="/dashboard" className={brandMark} title="UXAuditX Home">
+                  <MonitorCheck className="h-4 w-4" />
+                </Link>
+                {menuButton}
+              </>
             )}
           </header>
 
@@ -192,25 +201,23 @@ export function DashboardShell({
       >
         <header
           className={cn(
-            'dashboard-print-hide sticky top-0 z-30 flex items-center justify-between gap-4 border-b px-4 py-3 sm:px-6',
+            'dashboard-print-hide sticky top-0 z-30 flex items-center justify-between gap-4 border-b px-4 py-3 sm:px-6 lg:hidden',
             appBg,
             appBorder
           )}
         >
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              className="p-2 text-app-muted transition-colors hover:text-app-foreground lg:hidden"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <span className={cn('truncate text-base lg:hidden', brandName)}>
-              UXAudit<span className={brandAccent}>X</span>
-            </span>
+          <div className="flex min-w-0 items-center gap-2">
+            <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
+              <span className={brandMark}>
+                <MonitorCheck className="h-4 w-4" />
+              </span>
+              <span className={cn('truncate text-base', brandName)}>
+                UXAudit<span className={brandAccent}>X</span>
+              </span>
+            </Link>
+            {menuButton}
           </div>
-          <p className="hidden max-w-[50%] truncate text-sm text-app-muted sm:block">{userEmail}</p>
+          <p className="max-w-[40%] truncate text-sm text-app-muted">{userEmail}</p>
         </header>
 
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>

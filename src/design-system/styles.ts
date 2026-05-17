@@ -54,6 +54,17 @@ export const linkInline = 'font-medium text-app-foreground underline-offset-4 ho
 export const actionGhost =
   'inline-flex items-center gap-1.5 border-b border-transparent px-1 py-1 text-xs font-medium transition-colors sm:text-sm'
 
+/** Dashboard data UI */
+export const dashboardTableCard =
+  'overflow-hidden rounded-lg border border-app-border bg-app-surface shadow-sm'
+export const dashboardTableHead = 'bg-app-elevated/50'
+export const dashboardTableTh =
+  'px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-app-muted'
+export const dashboardTableThRight =
+  'px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-app-muted'
+export const dashboardTableTd = 'px-6 py-4 text-sm'
+export const dashboardSection = 'space-y-4 border-t border-app-border pt-6'
+
 /** Dashboard backward-compat aliases */
 export const dashBg = appBg
 export const dashBorder = appBorder

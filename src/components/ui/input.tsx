@@ -15,6 +15,8 @@ const inputVariants = cva(
           "h-10 rounded-none border-0 border-b border-app-border bg-transparent px-0 shadow-none focus-visible:border-app-accent/50 focus-visible:ring-0",
         ghost:
           "h-10 rounded-md border-0 bg-transparent px-0 focus-visible:ring-0",
+        search:
+          "h-10 rounded-lg border border-app-border-strong bg-app-bg py-2.5 pl-10 pr-3 shadow-sm focus-visible:border-app-accent/50 focus-visible:ring-2 focus-visible:ring-app-accent/25",
       },
       inputSize: {
         default: "text-sm",

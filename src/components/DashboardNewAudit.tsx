@@ -104,7 +104,6 @@ export function DashboardNewAudit({
         <Input
           type="url"
           required
-          variant="underline"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
           placeholder="https://yourwebsite.com"

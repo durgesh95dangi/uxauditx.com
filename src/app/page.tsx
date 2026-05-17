@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
+import { getAuthCallbackUrl } from '@/lib/auth-redirects';
 import { signOutAction } from '@/app/auth/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,7 +118,8 @@ export default function Home() {
     // Sign up the user with Supabase
     const supabase = createClient();
     const redirectToPath = auditData?.auditId ? `/results/${auditData.auditId}` : '/';
-    const callbackUrl = `${window.location.origin}/auth/callback?redirect_to=${encodeURIComponent(redirectToPath)}`;
+    // Always use production callback URL — never window.location.origin (local dev/tunnels leak into emails).
+    const callbackUrl = getAuthCallbackUrl(redirectToPath);
 
     const { error } = await supabase.auth.signUp({
       email: leadEmail,

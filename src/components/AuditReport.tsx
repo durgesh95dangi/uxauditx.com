@@ -266,7 +266,7 @@ export function AuditReport({
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href={`/signup?redirect=${redirectParam}`}>
-                    <button className="px-8 py-4 bg-[#0018F9] text-white rounded-md font-semibold hover:bg-[#0018F9]/90 transition-colors flex items-center gap-2 shadow-lg shadow-[#0018F9]/25">
+                    <button className="flex items-center gap-2 rounded-md bg-app-primary px-8 py-4 font-semibold text-white shadow-lg shadow-app-primary/25 transition-colors hover:bg-app-primary/90">
                       <ArrowRight className="w-4 h-4" />
                       Sign Up Free â€” Unlock All {allResults.length} Issues
                     </button>
@@ -288,7 +288,7 @@ export function AuditReport({
             <p className="text-[var(--muted)] mb-4">You have access to the complete report.</p>
             <div className="flex gap-4 justify-center">
               <Link href="/dashboard/reports">
-                <button className="px-6 py-3 bg-[#0018F9] text-white rounded-md font-medium hover:bg-[#0018F9]/90 transition-colors">
+                <button className="rounded-md bg-app-primary px-6 py-3 font-medium text-white transition-colors hover:bg-app-primary/90">
                   View All My Reports
                 </button>
               </Link>

@@ -2,8 +2,14 @@
 
 import type { DashboardAudit } from '@/lib/dashboard-audits'
 import { formatAuditDateTime, getWebsiteName } from '@/lib/dashboard-audits'
+import {
+  appBorder,
+  appDivide,
+  label,
+} from '@/design-system'
 import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Input } from '@/components/ui/input'
 import { ReportActions } from './ReportActions'
 
 export function ReportsTable({ audits }: { audits: DashboardAudit[] }) {
@@ -24,67 +30,65 @@ export function ReportsTable({ audits }: { audits: DashboardAudit[] }) {
   }
 
   return (
-    <section className="space-y-4">
-      <label className="relative block">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by website name or URL…"
-          className="h-11 w-full rounded-xl border border-white/10 bg-[#0f172a] pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-[#0018F9]/50 focus:outline-none focus:ring-2 focus:ring-[#0018F9]/30"
-        />
-      </label>
+    <section className="space-y-0">
+      <div className={`border-b pb-4 ${appBorder}`}>
+        <label className="relative block max-w-md">
+          <Search className="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-app-muted" />
+          <Input
+            type="search"
+            variant="underline"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by website name or URL…"
+            className="pl-8"
+          />
+        </label>
+      </div>
 
       {filtered.length === 0 ? (
-        <p className="rounded-xl border border-white/10 bg-[#0f172a] px-4 py-8 text-center text-sm text-slate-400">
+        <p className={`border-b py-12 text-center text-sm text-app-muted ${appBorder}`}>
           No reports match your search.
         </p>
       ) : (
         <>
-          <ul className="space-y-3 md:hidden">
+          <ul className={`divide-y md:hidden ${appDivide}`}>
             {filtered.map((audit) => (
-              <li
-                key={audit.id}
-                className="rounded-xl border border-white/10 bg-[#0f172a] p-4"
-              >
-                <p className="font-semibold text-white">{getWebsiteName(audit)}</p>
-                <p className="mt-1 text-xs text-slate-500">{formatAuditDateTime(audit.created_at)}</p>
-                <p className="mt-2 truncate text-xs text-slate-400">{audit.url}</p>
-                <span className="mt-4 block">
-                  <ReportActions auditId={audit.id} websiteName={getWebsiteName(audit)} />
-                </span>
+              <li key={audit.id} className="space-y-3 py-4">
+                <p className="text-sm font-medium text-app-foreground">{getWebsiteName(audit)}</p>
+                <p className="text-xs text-app-muted">{formatAuditDateTime(audit.created_at)}</p>
+                <p className="truncate text-xs text-app-muted">{audit.url}</p>
+                <ReportActions auditId={audit.id} websiteName={getWebsiteName(audit)} />
               </li>
             ))}
           </ul>
 
-          <section className="hidden overflow-hidden rounded-xl border border-white/10 bg-[#0f172a] md:block">
-            <table className="w-full text-left text-sm">
+          <div className={`hidden overflow-x-auto border-b md:block ${appBorder}`}>
+            <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-xs uppercase tracking-wide text-slate-500">
-                  <th className="px-5 py-4 font-medium">Website name</th>
-                  <th className="px-5 py-4 font-medium">Generated</th>
-                  <th className="px-5 py-4 font-medium text-right">Actions</th>
+                <tr className={`border-b ${appBorder}`}>
+                  <th className={`py-3 pr-4 font-medium ${label}`}>Website name</th>
+                  <th className={`py-3 pr-4 font-medium ${label}`}>Generated</th>
+                  <th className={`py-3 text-right font-medium ${label}`}>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={`divide-y ${appDivide}`}>
                 {filtered.map((audit) => (
-                  <tr key={audit.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                    <td className="px-5 py-4">
-                      <p className="font-medium text-white">{getWebsiteName(audit)}</p>
-                      <p className="mt-0.5 max-w-md truncate text-xs text-slate-500">{audit.url}</p>
+                  <tr key={audit.id} className="transition-colors hover:bg-white/[0.02]">
+                    <td className="py-4 pr-4">
+                      <p className="font-medium text-app-foreground">{getWebsiteName(audit)}</p>
+                      <p className="mt-0.5 max-w-md truncate text-xs text-app-muted">{audit.url}</p>
                     </td>
-                    <td className="px-5 py-4 text-slate-400">{formatAuditDateTime(audit.created_at)}</td>
-                    <td className="px-5 py-4">
-                      <span className="flex justify-end">
-                        <ReportActions auditId={audit.id} websiteName={getWebsiteName(audit)} />
-                      </span>
+                    <td className="py-4 pr-4 text-app-muted">
+                      {formatAuditDateTime(audit.created_at)}
+                    </td>
+                    <td className="py-4 text-right">
+                      <ReportActions auditId={audit.id} websiteName={getWebsiteName(audit)} />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </section>
+          </div>
         </>
       )}
     </section>

@@ -6,6 +6,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-app-surface: var(--app-surface);
+  --color-app-elevated: var(--app-elevated);
+  --color-app-primary: var(--app-primary);
+  --color-app-accent: var(--app-accent);
+  --color-app-foreground: var(--app-foreground);
+  --color-app-muted: var(--app-muted);
+  --color-app-muted-foreground: var(--app-muted-foreground);
+  --color-app-border: var(--app-border);
+  --color-app-border-strong: var(--app-border-strong);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -50,24 +60,36 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* ConvertScan app shell */
+  --app-bg: #09090b;
+  --app-surface: #18181b;
+  --app-elevated: #27272a;
+  --app-primary: #0018f9;
+  --app-accent: #4d5fff;
+  --app-foreground: #fafafa;
+  --app-muted: #71717a;
+  --app-muted-foreground: #a1a1aa;
+  --app-border: rgb(255 255 255 / 0.08);
+  --app-border-strong: rgb(255 255 255 / 0.12);
+
+  --background: var(--app-bg);
+  --foreground: var(--app-foreground);
+  --card: var(--app-surface);
+  --card-foreground: var(--app-foreground);
+  --popover: var(--app-surface);
+  --popover-foreground: var(--app-foreground);
+  --primary: var(--app-primary);
+  --primary-foreground: #ffffff;
+  --secondary: rgb(255 255 255 / 0.06);
+  --secondary-foreground: var(--app-foreground);
+  --muted: var(--app-elevated);
+  --muted-foreground: var(--app-muted-foreground);
+  --accent: var(--app-accent);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: var(--app-border);
+  --input: var(--app-border-strong);
+  --ring: var(--app-accent);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -137,7 +159,7 @@
   input:-webkit-autofill:hover, 
   input:-webkit-autofill:focus, 
   input:-webkit-autofill:active {
-      -webkit-box-shadow: 0 0 0 30px #09090b inset !important;
+      -webkit-box-shadow: 0 0 0 30px var(--app-bg) inset !important;
       -webkit-text-fill-color: white !important;
       transition: background-color 5000s ease-in-out 0s;
   }

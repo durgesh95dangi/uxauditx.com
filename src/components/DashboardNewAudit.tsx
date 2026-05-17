@@ -1,5 +1,10 @@
 'use client'
 
+import {
+  appBorder,
+  sectionDescription,
+  sectionTitle,
+} from '@/design-system'
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Plus, X } from 'lucide-react'
@@ -65,66 +70,58 @@ export function DashboardNewAudit({
 
   if (!isOpen) {
     return (
-      <Button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="h-11 bg-[#0018F9] px-5 text-white hover:bg-[#0018F9]/90"
-      >
+      <Button type="button" onClick={() => setIsOpen(true)}>
         <Plus className="mr-2 h-4 w-4" />
         New Audit
       </Button>
     )
   }
 
+  const Wrapper = 'div' as const
+
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0f172a] p-5">
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Run New Audit</h2>
-          <p className="mt-1 text-sm text-slate-400">Start another CRO report without leaving your dashboard.</p>
-        </div>
+    <section className={`border-t pt-6 ${appBorder}`}>
+      <Wrapper className="mb-4 flex items-start justify-between gap-4">
+        <Wrapper>
+          <h2 className={sectionTitle}>Run new audit</h2>
+          <p className={`mt-1 ${sectionDescription}`}>
+            Start another CRO report from your dashboard.
+          </p>
+        </Wrapper>
         {!isSubmitting && (
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="rounded-md p-2 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+            className="p-1 text-app-muted transition-colors hover:text-app-foreground"
             aria-label="Close new audit form"
           >
             <X className="h-4 w-4" />
           </button>
         )}
-      </div>
+      </Wrapper>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-xl space-y-4">
         <Input
           type="url"
           required
+          variant="underline"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
           placeholder="https://yourwebsite.com"
           disabled={isSubmitting}
-          className="h-12 border-white/10 bg-[#09090b] text-white focus-visible:ring-[#0018F9]"
         />
 
         {isSubmitting && (
-          <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#09090b] px-4 py-3 text-sm text-slate-300">
-            <Loader2 className="h-4 w-4 animate-spin text-[#4D5FFF]" />
+          <p className="flex items-center gap-2 text-sm text-app-muted">
+            <Loader2 className="h-4 w-4 animate-spin text-app-accent" />
             {STEPS[stepIndex]}
-          </div>
-        )}
-
-        {error && (
-          <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {error}
           </p>
         )}
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-11 bg-[#0018F9] px-5 text-white hover:bg-[#0018F9]/90"
-        >
-          {isSubmitting ? 'Generating report...' : 'Generate Audit'}
+        {error && <p className="text-sm text-red-400/90">{error}</p>}
+
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Generating report...' : 'Generate audit'}
         </Button>
       </form>
     </section>

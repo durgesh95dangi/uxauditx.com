@@ -1,4 +1,9 @@
-import { AlertTriangle, BarChart3, FileText } from 'lucide-react'
+import {
+  appBorder,
+  appDivide,
+  label,
+  statValue,
+} from '@/design-system'
 
 export function DashboardStats({
   totalReports,
@@ -9,41 +14,25 @@ export function DashboardStats({
   totalIssues: number
   avgScore: number | null
 }) {
-  const cards = [
-    {
-      label: 'Reports generated',
-      value: totalReports,
-      icon: FileText,
-      accent: 'text-white',
-    },
-    {
-      label: 'Issues found',
-      value: totalIssues,
-      icon: AlertTriangle,
-      accent: 'text-amber-400',
-    },
-    {
-      label: 'Average CRO score',
-      value: avgScore ?? '—',
-      icon: BarChart3,
-      accent: 'text-[#4D5FFF]',
-    },
+  const items = [
+    { label: 'Reports generated', value: totalReports, valueClass: 'text-app-foreground' },
+    { label: 'Issues found', value: totalIssues, valueClass: 'text-amber-400/90' },
+    { label: 'Average CRO score', value: avgScore ?? '—', valueClass: 'text-app-accent' },
   ]
 
   return (
-    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {cards.map(({ label, value, icon: Icon, accent }) => (
-        <article
-          key={label}
-          className="rounded-xl border border-white/10 bg-[#0f172a] p-5 sm:p-6"
-        >
-          <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5">
-            <Icon className={`h-5 w-5 ${accent}`} />
-          </span>
-          <p className={`text-3xl font-bold ${accent}`}>{value}</p>
-          <p className="mt-1 text-sm text-slate-400">{label}</p>
-        </article>
-      ))}
+    <section className={`border-y ${appBorder}`}>
+      <ul className={`grid grid-cols-1 sm:grid-cols-3 sm:divide-x ${appDivide}`}>
+        {items.map(({ label: itemLabel, value, valueClass }) => (
+          <li
+            key={itemLabel}
+            className="px-0 py-5 first:sm:pl-0 last:sm:pr-0 sm:px-6 sm:py-6"
+          >
+            <p className={label}>{itemLabel}</p>
+            <p className={`${statValue} ${valueClass}`}>{value}</p>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

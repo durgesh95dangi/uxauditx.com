@@ -1,6 +1,13 @@
 'use client'
 
 import { signOutAction } from '@/app/auth/actions'
+import {
+  appBg,
+  appBorder,
+  brandAccent,
+  brandMark,
+  brandName,
+} from '@/design-system'
 import { cn } from '@/lib/utils'
 import { FileText, LayoutDashboard, LogOut, Menu, MonitorCheck } from 'lucide-react'
 import Link from 'next/link'
@@ -16,7 +23,6 @@ const SIDEBAR_COLLAPSED_KEY = 'uxauditx-sidebar-collapsed'
 const SIDEBAR_COLLAPSED_W = '4.5rem'
 const SIDEBAR_EXPANDED_W = '16rem'
 
-/** Mobile + tablet: expanded sidebar overlays content. Desktop: sidebar pushes content. */
 function useCompactSidebar() {
   const [isCompact, setIsCompact] = useState(false)
 
@@ -79,7 +85,7 @@ export function DashboardShell({
       : SIDEBAR_EXPANDED_W
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-50">
+    <div className={cn('min-h-screen', appBg)}>
       {overlayExpanded && (
         <button
           type="button"
@@ -92,21 +98,24 @@ export function DashboardShell({
       <aside
         style={{ width: sidebarWidth }}
         className={cn(
-          'dashboard-print-hide fixed inset-y-0 left-0 z-50 border-r border-white/10 bg-[#0f172a] transition-[width,box-shadow] duration-200 ease-in-out',
+          'dashboard-print-hide fixed inset-y-0 left-0 z-50 border-r transition-[width,box-shadow] duration-200 ease-in-out',
+          appBg,
+          appBorder,
           overlayExpanded && 'shadow-2xl shadow-black/50'
         )}
       >
         <div className="flex h-full flex-col">
           <header
             className={cn(
-              'border-b border-white/10',
+              'border-b',
+              appBorder,
               showLabels ? 'flex items-center gap-2 p-3' : 'flex flex-col items-center gap-2 p-2'
             )}
           >
             <button
               type="button"
               onClick={toggleCollapsed}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+              className="flex h-9 w-9 shrink-0 items-center justify-center text-app-muted transition-colors hover:text-app-foreground"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               aria-expanded={!isCollapsed}
               title={isCollapsed ? 'Expand menu' : 'Collapse menu'}
@@ -115,26 +124,22 @@ export function DashboardShell({
             </button>
 
             {showLabels ? (
-              <Link href="/dashboard" className="flex min-w-0 flex-1 items-center gap-2">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-[#0018F9] to-[#0018F9]/70">
-                  <MonitorCheck className="h-4 w-4 text-white" />
+              <Link href="/dashboard" className="flex min-w-0 flex-1 items-center gap-2.5">
+                <span className={brandMark}>
+                  <MonitorCheck className="h-4 w-4" />
                 </span>
-                <span className="truncate text-base font-bold tracking-tight text-white">
-                  UXAudit<span className="text-[#4D5FFF]">X</span>
+                <span className={cn('truncate text-base', brandName)}>
+                  UXAudit<span className={brandAccent}>X</span>
                 </span>
               </Link>
             ) : (
-              <Link
-                href="/dashboard"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-[#0018F9] to-[#0018F9]/70"
-                title="UXAuditX Home"
-              >
-                <MonitorCheck className="h-4 w-4 text-white" />
+              <Link href="/dashboard" className={brandMark} title="UXAuditX Home">
+                <MonitorCheck className="h-4 w-4" />
               </Link>
             )}
           </header>
 
-          <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-4">
+          <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4">
             {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
               const active = isActive(href, exact)
               return (
@@ -144,30 +149,32 @@ export function DashboardShell({
                   title={showLabels ? undefined : label}
                   onClick={() => overlayExpanded && collapseSidebar()}
                   className={cn(
-                    'flex items-center rounded-lg py-2.5 text-sm font-medium transition-colors',
+                    'flex items-center rounded-md py-2 text-sm font-medium transition-colors',
                     showLabels ? 'gap-3 px-3' : 'justify-center px-0',
                     active
-                      ? 'bg-[#0018F9]/20 text-white ring-1 ring-[#0018F9]/40'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      ? 'bg-white/5 text-app-foreground'
+                      : 'text-app-muted hover:bg-white/[0.03] hover:text-app-muted-foreground'
                   )}
                 >
-                  <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-[#4D5FFF]' : '')} />
+                  <Icon
+                    className={cn('h-4 w-4 shrink-0', active ? 'text-app-accent' : 'text-app-muted')}
+                  />
                   {showLabels && <span>{label}</span>}
                 </Link>
               )
             })}
           </nav>
 
-          <footer className="border-t border-white/10 p-2">
+          <footer className={cn('border-t p-2', appBorder)}>
             {showLabels && (
-              <p className="mb-2 truncate px-2 text-xs text-slate-500">{userEmail}</p>
+              <p className="mb-2 truncate px-2 text-xs text-app-muted">{userEmail}</p>
             )}
             <form action={signOutAction}>
               <button
                 type="submit"
                 title="Sign out"
                 className={cn(
-                  'flex w-full items-center rounded-lg py-2.5 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white',
+                  'flex w-full items-center rounded-md py-2 text-sm text-app-muted transition-colors hover:bg-white/[0.03] hover:text-app-foreground',
                   showLabels ? 'gap-2 px-3' : 'justify-center px-0'
                 )}
               >
@@ -183,21 +190,27 @@ export function DashboardShell({
         style={{ paddingLeft: mounted ? mainPaddingLeft : SIDEBAR_EXPANDED_W }}
         className="flex min-h-screen flex-col transition-[padding] duration-200 ease-in-out"
       >
-        <header className="dashboard-print-hide sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/10 bg-[#09090b]/90 px-4 py-3 backdrop-blur-md sm:px-6">
+        <header
+          className={cn(
+            'dashboard-print-hide sticky top-0 z-30 flex items-center justify-between gap-4 border-b px-4 py-3 sm:px-6',
+            appBg,
+            appBorder
+          )}
+        >
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={toggleCollapsed}
-              className="rounded-lg border border-white/10 p-2 text-slate-300 transition-colors hover:bg-white/5 lg:hidden"
+              className="p-2 text-app-muted transition-colors hover:text-app-foreground lg:hidden"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="truncate text-base font-bold text-white lg:hidden">
-              UXAudit<span className="text-[#4D5FFF]">X</span>
+            <span className={cn('truncate text-base lg:hidden', brandName)}>
+              UXAudit<span className={brandAccent}>X</span>
             </span>
           </div>
-          <p className="hidden max-w-[50%] truncate text-sm text-slate-400 sm:block">{userEmail}</p>
+          <p className="hidden max-w-[50%] truncate text-sm text-app-muted sm:block">{userEmail}</p>
         </header>
 
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>
@@ -205,4 +218,3 @@ export function DashboardShell({
     </div>
   )
 }
-
